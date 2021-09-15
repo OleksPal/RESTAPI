@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;   
+using System;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace WebAPI.Controllers
 {
@@ -7,7 +10,10 @@ namespace WebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        // Our fictitious database 
+        const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
+        AttachDbFilename=C:\Users\komp\source\repos\WebAPI\WebAPI\Database.mdf;
+        Integrated Security=True";
+
         public List<ShopItem> Items = new()
         {
             new ShopItem("Sharp", 70),
@@ -19,20 +25,90 @@ namespace WebAPI.Controllers
             new ShopItem("Potato", 40)
         };
 
-        [HttpGet]
-        [Route("GetAllItems")]
-        public List<ShopItem> GetAllItems()
+        private List<ShopItem> GetItemList(string tableName)
         {
-            // Return all Items
-            return Items;
+            List<ShopItem> list = new();
+            using (SqlConnection sqlConnection = new(connectionString))
+            {
+                sqlConnection.Open();
+                var command = new SqlCommand("SELECT * FROM " + tableName, sqlConnection);
+
+                SqlDataReader sqlReader = null;
+
+                try
+                {
+                    sqlReader = command.ExecuteReader();
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+
+                while (sqlReader.Read())
+                {
+                    list.Add(new ShopItem(sqlReader.GetString("Name"),
+                        (double)sqlReader.GetDecimal("Price")));
+                }
+            }
+            return list;
+        }
+
+        private List<ShopItem> GetAllItems()
+        {
+            List<ShopItem> allItems = new();
+            using (SqlConnection sqlConnection = new(connectionString))
+            {
+                List<string> tablesList = GetTables(connectionString);
+
+                foreach (var tableName in tablesList)
+                {
+                    List<ShopItem> itemsInShop = GetAllItemsInStore(
+                        tableName.Substring(0, tableName.Length - 5));
+                    foreach (var item in itemsInShop)
+                    {
+                        allItems.Add(item);
+                    }
+                }
+            }
+            return allItems;
+        }
+
+        private List<string> GetTables(string connectionString)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                DataTable schema = connection.GetSchema("Tables");
+                List<string> TableNames = new List<string>();
+                foreach (DataRow row in schema.Rows)
+                {
+                    TableNames.Add(row[2].ToString());
+                }
+                return TableNames;
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllItemsInStore")]
+        public List<ShopItem> GetAllItemsInStore(string storeName)
+        {
+            string tableName = storeName + "Items";
+            return GetItemList(tableName);
+        }
+
+        [HttpGet]
+        [Route("GetAllItemsInAllShops")]
+        public List<ShopItem> GetAllItemsInAllShops()
+        {
+            return GetAllItems();
         }
 
         [HttpGet]
         [Route("GetItemOnName")]
-        public ShopItem GetItemOnName(string name) 
+        public ShopItem GetItemOnName(string name)
         {
-            // Return a specific item
-            foreach (var item in Items)
+            List<ShopItem> allItems = GetAllItems();
+            foreach (var item in allItems)
             {
                 if (name == item.Name)
                     return item;
@@ -41,11 +117,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetPrice")]
-        public double GetPrice(string name)
+        [Route("GetItemPrice")]
+        public double GetItemPrice(string name)
         {
-            // Return a specific user
-            foreach (var item in Items)
+            List<ShopItem> allItems = GetAllItems();
+            foreach (var item in allItems)
             {
                 if (name == item.Name)
                     return item.Price;

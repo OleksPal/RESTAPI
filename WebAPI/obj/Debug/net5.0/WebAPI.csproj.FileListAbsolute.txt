@@ -27,3 +27,9 @@ C:\Users\komp\source\repos\WebAPI\WebAPI\obj\Debug\net5.0\WebAPI.dll
 C:\Users\komp\source\repos\WebAPI\WebAPI\obj\Debug\net5.0\ref\WebAPI.dll
 C:\Users\komp\source\repos\WebAPI\WebAPI\obj\Debug\net5.0\WebAPI.pdb
 C:\Users\komp\source\repos\WebAPI\WebAPI\obj\Debug\net5.0\WebAPI.genruntimeconfig.cache
+C:\Users\komp\source\repos\WebAPI\WebAPI\bin\Debug\net5.0\System.Data.SqlClient.dll
+C:\Users\komp\source\repos\WebAPI\WebAPI\bin\Debug\net5.0\runtimes\win-arm64\native\sni.dll
+C:\Users\komp\source\repos\WebAPI\WebAPI\bin\Debug\net5.0\runtimes\win-x64\native\sni.dll
+C:\Users\komp\source\repos\WebAPI\WebAPI\bin\Debug\net5.0\runtimes\win-x86\native\sni.dll
+C:\Users\komp\source\repos\WebAPI\WebAPI\bin\Debug\net5.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\komp\source\repos\WebAPI\WebAPI\bin\Debug\net5.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
