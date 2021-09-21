@@ -14,17 +14,6 @@ namespace WebAPI.Controllers
         AttachDbFilename=C:\Users\komp\source\repos\WebAPI\WebAPI\Database.mdf;
         Integrated Security=True";
 
-        public List<ShopItem> Items = new()
-        {
-            new ShopItem("Sharp", 70),
-            new ShopItem("Apple", 300),
-            new ShopItem("Bread", 110),
-            new ShopItem("Sausage", 80),
-            new ShopItem("Butter", 70),
-            new ShopItem("Milk", 300),
-            new ShopItem("Potato", 40)
-        };
-
         private List<ShopItem> GetItemList(string tableName)
         {
             List<ShopItem> list = new();
@@ -129,41 +118,65 @@ namespace WebAPI.Controllers
             return 0;
         }
 
+        private void UpdateItemInTable(string tableName, string name, double price)
+        {
+            using (SqlConnection sqlConnection = new(connectionString))
+            {
+                sqlConnection.Open();
+                var command = new SqlCommand($"UPDATE {tableName} " +
+                                             $"SET Name = '{name}', Price = {price}" +
+                                             $"WHERE Name = '{name}'", sqlConnection);
+
+                SqlDataReader sqlReader = null;
+                sqlReader = command.ExecuteReader();
+            }
+        }
+
         [HttpPut]
         [Route("UpdateItem")]
-        public List<ShopItem> UpdateItem(string name, double price)
+        public void UpdateItem(string tableName, string name, double price)
         {
-            ShopItem putItem = new();
-            foreach (var item in Items)
+            UpdateItemInTable(tableName, name, price);
+        }
+
+        private void AddItem(string tableName, string name, double price)
+        {
+            using (SqlConnection sqlConnection = new(connectionString))
             {
-                if (name == item.Name)
-                    putItem = item;
+                sqlConnection.Open();
+                var command = new SqlCommand($"INSERT INTO {tableName}(Name, Price)" +
+                                             $" VALUES('{name}',{price});", sqlConnection);
+
+                SqlDataReader sqlReader = null;
+                sqlReader = command.ExecuteReader();
             }
-            Items.Remove(putItem);
-            Items.Add(new ShopItem(name, price));
-            return Items;
         }
 
         [HttpPost]
         [Route("SaveNewItem")]
-        public List<ShopItem> SaveNewItem(string name, double price)
+        public void SaveNewItem(string tableName, string name, double price)
         {
-            Items.Add(new ShopItem(name, price));
-            return Items;
+            AddItem(tableName, name, price);
+        }
+
+        private void DeleteItem(string tableName, string name)
+        {
+            using (SqlConnection sqlConnection = new(connectionString))
+            {
+                sqlConnection.Open();
+                var command = new SqlCommand($"DELETE FROM {tableName} WHERE" +
+                                             $" Name = '{name}'", sqlConnection);
+
+                SqlDataReader sqlReader = null;
+                sqlReader = command.ExecuteReader();
+            }
         }
 
         [HttpDelete]
         [Route("DeleteItem")]
-        public List<ShopItem> DeleteItem(string name)
+        public void DeleteItemFromTable(string tableName, string name)
         {
-            ShopItem deleteItem = new();
-            foreach (var item in Items)
-            {
-                if (name == item.Name)
-                    deleteItem = item;
-            }
-            Items.Remove(deleteItem);
-            return Items;
+            DeleteItem(tableName, name);
         }
     }
 }
