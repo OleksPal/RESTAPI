@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
-using System;
 
 namespace WebAPI
 {
@@ -9,7 +8,8 @@ namespace WebAPI
     {
         const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
         AttachDbFilename=C:\Users\komp\source\repos\WebAPI\WebAPI\Database.mdf;
-        Integrated Security=True";
+        Integrated Security=True;MultipleActiveResultSets=true;";
+        SqlDataReader sqlReader = null;
 
         public void AddItem(string name, double price)
         {
@@ -19,21 +19,30 @@ namespace WebAPI
                 var command = new SqlCommand($"INSERT INTO FoodStoreItems(Name, Price)" +
                                              $" VALUES('{name}',{price});", sqlConnection);
 
-                SqlDataReader sqlReader = null;
                 sqlReader = command.ExecuteReader();
             }
         }
 
         public List<ShopItem> GetItems(string name)
         {
-            List<ShopItem> allItems = GetItems();
             List<ShopItem> answer = new();
             using (SqlConnection sqlConnection = new(connectionString))
             {
-                foreach (var item in allItems)
+                sqlConnection.Open();
+                using (SqlCommand command = new SqlCommand($"SELECT * FROM FoodStoreItems" +
+                                             $" WHERE Name = '{name}'", sqlConnection))
                 {
-                    if (name == item.Name)
-                        answer.Add(item);
+                    using (SqlDataReader sqlReader = command.ExecuteReader())
+                    {
+                        if (sqlReader != null)
+                        {
+                            while (sqlReader.Read())
+                            {
+                                answer.Add(new ShopItem(sqlReader.GetString("Name"),
+                                    (double)sqlReader.GetDecimal("Price")));
+                            }
+                        }
+                    } // reader closed and disposed up here
                 }
             }
             return answer;
@@ -41,28 +50,8 @@ namespace WebAPI
 
         public List<ShopItem> GetItems()
         {
-            List<ShopItem> allItems = new();
-            using (SqlConnection sqlConnection = new(connectionString))
-            {
-                var command = new SqlCommand("SELECT * FROM FoodStoreItems", sqlConnection);
-                SqlDataReader sqlReader = null;
-
-                try
-                {
-                    sqlReader = command.ExecuteReader();
-                }
-                catch (Exception e)
-                {
-                    return null;
-                }
-
-                while (sqlReader.Read())
-                {
-                    allItems.Add(new ShopItem(sqlReader.GetString("Name"),
-                        (double)sqlReader.GetDecimal("Price")));
-                }
-            }
-            return allItems;
+            DataFactory df = new();
+            return df.GetStoreItemList("FoodStoreItems");
         }
 
         public void UpdateItemInTable(string name, double price)
@@ -70,10 +59,11 @@ namespace WebAPI
             using (SqlConnection sqlConnection = new(connectionString))
             {
                 sqlConnection.Open();
-                var command = new SqlCommand($"INSERT INTO FoodStoreItems(Name, Price)" +
-                                             $" VALUES('{name}',{price});", sqlConnection);
+                var command = new SqlCommand($"UPDATE FoodStoreItems" +
+                                             $" SET Name = '{name}'," +
+                                             $" Price = {price} " +
+                                             $" WHERE Name = '{name}'", sqlConnection);
 
-                SqlDataReader sqlReader = null;
                 sqlReader = command.ExecuteReader();
             }
         }
@@ -86,7 +76,7 @@ namespace WebAPI
                 var command = new SqlCommand($"DELETE FROM FoodStoreItems WHERE" +
                                              $" Name = '{name}'", sqlConnection);
 
-                SqlDataReader sqlReader = null;
+                
                 sqlReader = command.ExecuteReader();
             }
         }

@@ -32,8 +32,8 @@ namespace WebAPI
         }
 
         [HttpGet]
-        [Route("GetItemFromFoodStore")]
-        public List<ShopItem> GetItemFromFoodStore(string name)
+        [Route("GetItemsFromFoodStore")]
+        public List<ShopItem> GetItemsFromFoodStore(string name)
         {
             FoodStoreService fss = new FoodStoreService();
             return fss.GetItems(name);
@@ -56,7 +56,7 @@ namespace WebAPI
         }
 
         [HttpPut]
-        [Route("UpdateItemInFoodStore")]
+        [Route("UpdateItemInAppliancesStore")]
         public void UpdateItemInAppliancesStore(string name, double price)
         {
             AppliancesStoreService appSS = new AppliancesStoreService();

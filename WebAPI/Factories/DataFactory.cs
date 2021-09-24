@@ -13,8 +13,9 @@ namespace WebAPI
         const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=
             C:\Users\komp\source\repos\ProblemShopping1\ProblemShopping1\Database.mdf;Integrated Security=True";
 
-        public void GetStoreItemList(string tableName, List<ShopItem> list)
+        public List<ShopItem> GetStoreItemList(string tableName)
         {
+            List<ShopItem> list = new();
             using (SqlConnection sqlConnection = new(connectionString))
             {
                 sqlConnection.Open();
@@ -31,14 +32,15 @@ namespace WebAPI
                         (double)sqlReader.GetDecimal("Price")));
                 }
             }
+            return list;
         }
 
         public List<Shop> GetAvailableStores()
         {
             var exemplarFoodFactory = new FoodStoreFactory();
             var exemplarAppliancesFactory = new AppliancesStoreFactory();
-            GetStoreItemList("FoodStoreItems", foodStoreItemList);
-            GetStoreItemList("AppliancesStoreItems", appliancesStoreItemList);
+            List<ShopItem> foodStoreItemList = GetStoreItemList("FoodStoreItems");
+            List<ShopItem> appliancesStoreItemList = GetStoreItemList("AppliancesStoreItems");
             return new List<Shop>
             {
                 exemplarFoodFactory.GetFoodStore(foodStoreItemList),
