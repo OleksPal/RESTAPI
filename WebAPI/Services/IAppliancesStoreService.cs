@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebAPI
 {
     public interface IAppliancesStoreService
     {
-        void Add(string name, double price);
-        List<ShopItem> GetItems();
-        void Update(string name, double price);
-        void Delete(string name);
+        Task Add(string name, double price);
+        Task<List<ShopItem>> GetItems();
+        Task Update(string name, double price);
+        Task Delete(string name);
     }
 }

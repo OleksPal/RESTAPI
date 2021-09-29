@@ -1,42 +1,43 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace WebAPI
 {
     public class FoodStoreRepository : IFoodStoreRepository
     {
         const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
-        AttachDbFilename=C:\Users\komp\source\repos\WebAPI\WebAPI\Database.mdf;
+        AttachDbFilename=C:\Users\Home\Documents\GitHub\RESTAPI\WebAPI\Database.mdf;
         Integrated Security=True;MultipleActiveResultSets=true;";
-        SqlDataReader sqlReader = null;
 
-        public void AddItem(string name, double price)
+        public async Task AddItem(string name, double price)
         {
-            using (SqlConnection sqlConnection = new(connectionString))
+            await using (SqlConnection sqlConnection = new(connectionString))
             {
-                sqlConnection.Open();
-                var command = new SqlCommand($"INSERT INTO FoodStoreItems(Name, Price)" +
-                                             $" VALUES('{name}',{price});", sqlConnection);
-
-                sqlReader = command.ExecuteReader();
+                await sqlConnection.OpenAsync();
+                await using (SqlCommand command = new SqlCommand($"INSERT INTO FoodStoreItems(Name, Price)" +
+                                             $" VALUES('{name}',{price});", sqlConnection))
+                {
+                    SqlDataReader sqlReader = await command.ExecuteReaderAsync();
+                }                    
             }
         }
 
-        public List<ShopItem> GetItems(string name)
+        public async Task<List<ShopItem>> GetItems(string name)
         {
             List<ShopItem> answer = new();
-            using (SqlConnection sqlConnection = new(connectionString))
+            await using (SqlConnection sqlConnection = new(connectionString))
             {
-                sqlConnection.Open();
-                using (SqlCommand command = new SqlCommand($"SELECT * FROM FoodStoreItems" +
+                await sqlConnection.OpenAsync();
+                await using (SqlCommand command = new SqlCommand($"SELECT * FROM FoodStoreItems" +
                                              $" WHERE Name = '{name}'", sqlConnection))
                 {
-                    using (SqlDataReader sqlReader = command.ExecuteReader())
+                    await using (SqlDataReader sqlReader = command.ExecuteReader())
                     {
                         if (sqlReader != null)
                         {
-                            while (sqlReader.Read())
+                            while (await sqlReader.ReadAsync())
                             {
                                 answer.Add(new ShopItem(sqlReader.GetString("Name"),
                                     (double)sqlReader.GetDecimal("Price")));
@@ -48,36 +49,37 @@ namespace WebAPI
             return answer;
         }
 
-        public List<ShopItem> GetItems()
+        public async Task<List<ShopItem>> GetItems()
         {
             DataFactory df = new();
-            return df.GetStoreItemList("FoodStoreItems");
+            return await df.GetStoreItemList("FoodStoreItems");
         }
 
-        public void UpdateItemInTable(string name, double price)
+        public async Task UpdateItemInTable(string name, double price)
         {
-            using (SqlConnection sqlConnection = new(connectionString))
+            await using (SqlConnection sqlConnection = new(connectionString))
             {
-                sqlConnection.Open();
-                var command = new SqlCommand($"UPDATE FoodStoreItems" +
+                await sqlConnection.OpenAsync();
+                await using (SqlCommand command = new SqlCommand($"UPDATE FoodStoreItems" +
                                              $" SET Name = '{name}'," +
                                              $" Price = {price} " +
-                                             $" WHERE Name = '{name}'", sqlConnection);
-
-                sqlReader = command.ExecuteReader();
+                                             $" WHERE Name = '{name}'", sqlConnection))
+                {
+                    SqlDataReader sqlReader = await command.ExecuteReaderAsync();
+                }                    
             }
         }
 
-        public void DeleteItemFromTable(string name)
+        public async Task DeleteItemFromTable(string name)
         {
-            using (SqlConnection sqlConnection = new(connectionString))
+            await using (SqlConnection sqlConnection = new(connectionString))
             {
-                sqlConnection.Open();
-                var command = new SqlCommand($"DELETE FROM FoodStoreItems WHERE" +
-                                             $" Name = '{name}'", sqlConnection);
-
-                
-                sqlReader = command.ExecuteReader();
+                await sqlConnection.OpenAsync();
+                await using (SqlCommand command = new SqlCommand($"DELETE FROM FoodStoreItems WHERE" +
+                                             $" Name = '{name}'", sqlConnection))
+                {
+                    SqlDataReader sqlReader = await command.ExecuteReaderAsync();
+                }
             }
         }
     }

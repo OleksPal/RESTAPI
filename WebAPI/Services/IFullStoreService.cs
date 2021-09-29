@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebAPI
 {
     public interface IFullStoreService
     {
-        List<ShopItem> GetAll();
+        Task<List<ShopItem>> GetAll();
     }
 }

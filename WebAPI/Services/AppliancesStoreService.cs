@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebAPI
 {
@@ -6,29 +7,29 @@ namespace WebAPI
     {
         AppliancesStoreRepository asr = new();
 
-        public void Add(string name, double price)
-        {            
-            asr.AddItem(name, price);
+        public async Task Add(string name, double price)
+        {
+            await asr.AddItem(name, price);
         }
 
-        public void Delete(string name)
+        public async Task Delete(string name)
         {
-            asr.DeleteItemFromTable(name);
+            await asr.DeleteItemFromTable(name);
         }
 
-        public List<ShopItem> GetItems(string name)
+        public async Task<List<ShopItem>> GetItems(string name)
         {
-            return asr.GetItems(name);
+            return await asr.GetItems(name);
         }
 
-        public List<ShopItem> GetItems()
+        public async Task<List<ShopItem>> GetItems()
         {
-            return asr.GetItems();
+            return await asr.GetItems();
         }
 
-        public void Update(string name, double price)
+        public async Task Update(string name, double price)
         {
-            asr.UpdateItemInTable(name, price);
+            await asr.UpdateItemInTable(name, price);
         }
     }
 }

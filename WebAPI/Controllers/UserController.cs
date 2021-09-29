@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;   
 
 namespace WebAPI
@@ -9,90 +10,90 @@ namespace WebAPI
     {
         [HttpGet]
         [Route("GetAllItemsInFoodStore")]
-        public List<ShopItem> GetAllItemsInFoodStore()
+        public async Task<List<ShopItem>> GetAllItemsInFoodStore()
         {
             FoodStoreService fss = new();
-            return fss.GetItems();
+            return await fss.GetItems();
         }
 
         [HttpGet]
         [Route("GetAllItemsInAppliancesStore")]
-        public List<ShopItem> GetAllItemsInAppliancesStore()
+        public async Task<List<ShopItem>> GetAllItemsInAppliancesStore()
         {
             AppliancesStoreService appSS = new();
-            return appSS.GetItems();
+            return await appSS.GetItems();
         }
 
         [HttpGet]
         [Route("GetAllItemsInAllShops")]
-        public List<ShopItem> GetAllItemsInAllShops()
+        public async Task<List<ShopItem>> GetAllItemsInAllShops()
         {
             FullStoreService fullSS = new FullStoreService();
-            return fullSS.GetAll();
+            return await fullSS.GetAll();
         }
 
         [HttpGet]
         [Route("GetItemsFromFoodStore")]
-        public List<ShopItem> GetItemsFromFoodStore(string name)
+        public async Task<List<ShopItem>> GetItemsFromFoodStore(string name)
         {
             FoodStoreService fss = new FoodStoreService();
-            return fss.GetItems(name);
+            return await fss.GetItems(name);
         }
 
         [HttpGet]
-        [Route("GetItemFromAppliancesStore")]
-        public List<ShopItem> GetItemFromAppliancesStore(string name)
+        [Route("GetItemsFromAppliancesStore")]
+        public async Task<List<ShopItem>> GetItemsFromAppliancesStore(string name)
         {
             AppliancesStoreService appSS = new AppliancesStoreService();
-            return appSS.GetItems(name);
+            return await appSS.GetItems(name);
         }
 
         [HttpPut]
         [Route("UpdateItemInFoodStore")]
-        public void UpdateItemInFoodStore(string name, double price)
+        public async Task UpdateItemInFoodStore(string name, double price)
         {
             FoodStoreService fss = new FoodStoreService();
-            fss.Update(name, price);
+            await fss.Update(name, price);
         }
 
         [HttpPut]
         [Route("UpdateItemInAppliancesStore")]
-        public void UpdateItemInAppliancesStore(string name, double price)
+        public async Task UpdateItemInAppliancesStore(string name, double price)
         {
             AppliancesStoreService appSS = new AppliancesStoreService();
-            appSS.Update(name, price);
+            await appSS.Update(name, price);
         }
 
         [HttpPost]
         [Route("SaveNewItemInFoodStore")]
-        public void SaveNewItemInFoodStore(string name, double price)
+        public async Task SaveNewItemInFoodStore(string name, double price)
         {
             FoodStoreService fss = new FoodStoreService();
-            fss.Add(name, price);
+            await fss.Add(name, price);
         }
 
         [HttpPost]
         [Route("SaveNewItemInAppliancesStore")]
-        public void SaveNewItemInAppliancesStore(string name, double price)
+        public async Task SaveNewItemInAppliancesStore(string name, double price)
         {
             AppliancesStoreService appSS = new AppliancesStoreService();
-            appSS.Add(name, price);
+            await appSS.Add(name, price);
         }
 
         [HttpDelete]
         [Route("DeleteItemFromFoodStore")]
-        public void DeleteItemFromFoodStore(string name)
+        public async Task DeleteItemFromFoodStore(string name)
         {
             FoodStoreService fss = new FoodStoreService();
-            fss.Delete(name);
+            await fss.Delete(name);
         }
 
         [HttpDelete]
         [Route("DeleteItemFromAppliancesStore")]
-        public void DeleteItemFromAppliancesStore(string name)
+        public async Task DeleteItemFromAppliancesStore(string name)
         {
             AppliancesStoreService appSS = new AppliancesStoreService();
-            appSS.Delete(name);
+            await appSS.Delete(name);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebAPI
 {
@@ -7,11 +8,12 @@ namespace WebAPI
         FoodStoreRepository fsr = new();
         AppliancesStoreRepository asr = new();
 
-        public List<ShopItem> GetAll()
+        public async Task<List<ShopItem>> GetAll()
         {
             List<ShopItem> answer = new();
-            answer.AddRange(asr.GetItems());
-            answer.AddRange(fsr.GetItems());
+
+            answer.AddRange(await asr.GetItems());
+            answer.AddRange(await fsr.GetItems());
             return answer;
         }
     }

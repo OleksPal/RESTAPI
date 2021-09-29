@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WebAPI
 {
@@ -17,7 +18,7 @@ namespace WebAPI
             var husband = exemplarHusband.GetHusband(wishList);
 
             Console.WriteLine("Total list:");
-            var allItems = husband.GetAllItems(availableStores);
+            var allItems = husband.GetAllItems(availableStores.Result);
             wife.Print(allItems);
 
             Console.WriteLine("\nBought:");

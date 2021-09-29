@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace WebAPI
 {
@@ -10,37 +10,39 @@ namespace WebAPI
         public List<ShopItem> foodStoreItemList = new();
         public List<ShopItem> appliancesStoreItemList = new();
 
-        const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=
-            C:\Users\komp\source\repos\ProblemShopping1\ProblemShopping1\Database.mdf;Integrated Security=True";
+        const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
+        AttachDbFilename=C:\Users\Home\Documents\GitHub\RESTAPI\WebAPI\Database.mdf;
+        Integrated Security=True;MultipleActiveResultSets=true;";
 
-        public List<ShopItem> GetStoreItemList(string tableName)
+        public async Task<List<ShopItem>> GetStoreItemList(string tableName)
         {
             List<ShopItem> list = new();
-            using (SqlConnection sqlConnection = new(connectionString))
+            await using (SqlConnection sqlConnection = new(connectionString))
             {
-                sqlConnection.Open();
+                await sqlConnection.OpenAsync();
                 // Do work here; connection closed on following line.
-                var command = new SqlCommand("SELECT * FROM " + tableName, sqlConnection);
-
-                SqlDataReader sqlReader = null;
-
-                sqlReader = command.ExecuteReader();
-
-                while (sqlReader.Read())
+                await using (SqlCommand command = new SqlCommand("SELECT * FROM " + tableName,
+                    sqlConnection)) 
                 {
-                    list.Add(new ShopItem(sqlReader.GetString("Name"),
-                        (double)sqlReader.GetDecimal("Price")));
-                }
+                    await using (SqlDataReader sqlReader = command.ExecuteReader()) 
+                    {
+                        while (await sqlReader.ReadAsync())
+                        {
+                            list.Add(new ShopItem(sqlReader.GetString("Name"),
+                                (double)sqlReader.GetDecimal("Price")));
+                        }
+                    }
+                }                
             }
             return list;
         }
 
-        public List<Shop> GetAvailableStores()
+        public async Task<List<Shop>> GetAvailableStores()
         {
             var exemplarFoodFactory = new FoodStoreFactory();
             var exemplarAppliancesFactory = new AppliancesStoreFactory();
-            List<ShopItem> foodStoreItemList = GetStoreItemList("FoodStoreItems");
-            List<ShopItem> appliancesStoreItemList = GetStoreItemList("AppliancesStoreItems");
+            List<ShopItem> foodStoreItemList = await GetStoreItemList("FoodStoreItems");
+            List<ShopItem> appliancesStoreItemList = await GetStoreItemList("AppliancesStoreItems");
             return new List<Shop>
             {
                 exemplarFoodFactory.GetFoodStore(foodStoreItemList),
