@@ -5,44 +5,65 @@ using System.Threading.Tasks;
 
 namespace WebAPI
 {
-    internal class DataFactory
+    internal class DataFactory : IGetFoodStoreItemList, IGetAppliancesStoreItemList
     {
-        public List<ShopItem> foodStoreItemList = new();
-        public List<ShopItem> appliancesStoreItemList = new();
+        private List<ShopItem> foodStoreItemList;
+        private List<ShopItem> appliancesStoreItemList;
 
         const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
-        AttachDbFilename=C:\Users\Home\Documents\GitHub\RESTAPI\WebAPI\Database.mdf;
+        AttachDbFilename=C:\Users\komp\Documents\GitHub\RESTAPI\WebAPI\Database.mdf;
         Integrated Security=True;MultipleActiveResultSets=true;";
 
-        public async Task<List<ShopItem>> GetStoreItemList(string tableName)
+        public List<ShopItem> FoodStoreItemList 
         {
-            List<ShopItem> list = new();
-            await using (SqlConnection sqlConnection = new(connectionString))
+            get 
             {
-                await sqlConnection.OpenAsync();
+                GetStoreItemList("FoodStoreItems");
+                return foodStoreItemList;
+            }
+        }
+
+        public List<ShopItem> AppliancesStoreItemList
+        {
+            get
+            {
+                GetStoreItemList("AppliancesStoreItems");
+                return appliancesStoreItemList;
+            }
+        }
+
+        public void GetStoreItemList(string tableName)
+        {
+            List<ShopItem> itemList = new();
+            using (SqlConnection sqlConnection = new(connectionString))
+            {
+                sqlConnection.Open();
                 // Do work here; connection closed on following line.
-                await using (SqlCommand command = new SqlCommand("SELECT * FROM " + tableName,
+                using (SqlCommand command = new SqlCommand("SELECT * FROM " + tableName,
                     sqlConnection)) 
                 {
-                    await using (SqlDataReader sqlReader = command.ExecuteReader()) 
+                    using (SqlDataReader sqlReader = command.ExecuteReader()) 
                     {
-                        while (await sqlReader.ReadAsync())
+                        while (sqlReader.Read())
                         {
-                            list.Add(new ShopItem(sqlReader.GetString("Name"),
+                            itemList.Add(new ShopItem(sqlReader.GetString("Name"),
                                 (double)sqlReader.GetDecimal("Price")));
                         }
+                        if (tableName == "FoodStoreItems")
+                            foodStoreItemList = itemList;
+                        if (tableName == "AppliancesStoreItems")
+                            appliancesStoreItemList = itemList;
                     }
                 }                
             }
-            return list;
         }
 
-        public async Task<List<Shop>> GetAvailableStores()
+        public List<Shop> GetAvailableStores()
         {
             var exemplarFoodFactory = new FoodStoreFactory();
             var exemplarAppliancesFactory = new AppliancesStoreFactory();
-            List<ShopItem> foodStoreItemList = await GetStoreItemList("FoodStoreItems");
-            List<ShopItem> appliancesStoreItemList = await GetStoreItemList("AppliancesStoreItems");
+            GetStoreItemList("FoodStoreItems");
+            GetStoreItemList("AppliancesStoreItems");
             return new List<Shop>
             {
                 exemplarFoodFactory.GetFoodStore(foodStoreItemList),

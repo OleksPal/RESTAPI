@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace WebAPI
 {
-    public class AppliancesStoreService : IAppliancesStoreService
+    public class AppliancesStoreService : IStoreService
     {
-        AppliancesStoreRepository asr = new();
+        IStoreRepository asr = new AppliancesStoreRepository();
 
         public async Task Add(string name, double price)
         {
@@ -19,12 +19,12 @@ namespace WebAPI
 
         public async Task<List<ShopItem>> GetItems(string name)
         {
-            return await asr.GetItems(name);
+            return await asr.GetItemsByName(name);
         }
 
         public async Task<List<ShopItem>> GetItems()
         {
-            return await asr.GetItems();
+            return await Task.FromResult(asr.ItemList);
         }
 
         public async Task Update(string name, double price)

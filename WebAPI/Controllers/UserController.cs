@@ -12,7 +12,7 @@ namespace WebAPI
         [Route("GetAllItemsInFoodStore")]
         public async Task<List<ShopItem>> GetAllItemsInFoodStore()
         {
-            FoodStoreService fss = new();
+            IStoreService fss = new FoodStoreService();
             return await fss.GetItems();
         }
 
@@ -20,7 +20,7 @@ namespace WebAPI
         [Route("GetAllItemsInAppliancesStore")]
         public async Task<List<ShopItem>> GetAllItemsInAppliancesStore()
         {
-            AppliancesStoreService appSS = new();
+            IStoreService appSS = new AppliancesStoreService();
             return await appSS.GetItems();
         }
 
@@ -28,15 +28,15 @@ namespace WebAPI
         [Route("GetAllItemsInAllShops")]
         public async Task<List<ShopItem>> GetAllItemsInAllShops()
         {
-            FullStoreService fullSS = new FullStoreService();
-            return await fullSS.GetAll();
+            IFullStoreService fullSS = new FullStoreService();
+            return await fullSS.AllItems;
         }
 
         [HttpGet]
         [Route("GetItemsFromFoodStore")]
         public async Task<List<ShopItem>> GetItemsFromFoodStore(string name)
         {
-            FoodStoreService fss = new FoodStoreService();
+            IStoreService fss = new FoodStoreService();
             return await fss.GetItems(name);
         }
 
@@ -44,7 +44,7 @@ namespace WebAPI
         [Route("GetItemsFromAppliancesStore")]
         public async Task<List<ShopItem>> GetItemsFromAppliancesStore(string name)
         {
-            AppliancesStoreService appSS = new AppliancesStoreService();
+            IStoreService appSS = new AppliancesStoreService();
             return await appSS.GetItems(name);
         }
 
@@ -52,7 +52,7 @@ namespace WebAPI
         [Route("UpdateItemInFoodStore")]
         public async Task UpdateItemInFoodStore(string name, double price)
         {
-            FoodStoreService fss = new FoodStoreService();
+            IStoreService fss = new FoodStoreService();
             await fss.Update(name, price);
         }
 
@@ -60,7 +60,7 @@ namespace WebAPI
         [Route("UpdateItemInAppliancesStore")]
         public async Task UpdateItemInAppliancesStore(string name, double price)
         {
-            AppliancesStoreService appSS = new AppliancesStoreService();
+            IStoreService appSS = new AppliancesStoreService();
             await appSS.Update(name, price);
         }
 
@@ -68,7 +68,7 @@ namespace WebAPI
         [Route("SaveNewItemInFoodStore")]
         public async Task SaveNewItemInFoodStore(string name, double price)
         {
-            FoodStoreService fss = new FoodStoreService();
+            IStoreService fss = new FoodStoreService();
             await fss.Add(name, price);
         }
 
@@ -76,7 +76,7 @@ namespace WebAPI
         [Route("SaveNewItemInAppliancesStore")]
         public async Task SaveNewItemInAppliancesStore(string name, double price)
         {
-            AppliancesStoreService appSS = new AppliancesStoreService();
+            IStoreService appSS = new AppliancesStoreService();
             await appSS.Add(name, price);
         }
 
@@ -84,7 +84,7 @@ namespace WebAPI
         [Route("DeleteItemFromFoodStore")]
         public async Task DeleteItemFromFoodStore(string name)
         {
-            FoodStoreService fss = new FoodStoreService();
+            IStoreService fss = new FoodStoreService();
             await fss.Delete(name);
         }
 
@@ -92,7 +92,7 @@ namespace WebAPI
         [Route("DeleteItemFromAppliancesStore")]
         public async Task DeleteItemFromAppliancesStore(string name)
         {
-            AppliancesStoreService appSS = new AppliancesStoreService();
+            IStoreService appSS = new AppliancesStoreService();
             await appSS.Delete(name);
         }
     }

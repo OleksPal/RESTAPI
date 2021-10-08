@@ -18,7 +18,7 @@ namespace WebAPI
             var husband = exemplarHusband.GetHusband(wishList);
 
             Console.WriteLine("Total list:");
-            var allItems = husband.GetAllItems(availableStores.Result);
+            var allItems = husband.GetAllItems(availableStores);
             wife.Print(allItems);
 
             Console.WriteLine("\nBought:");

@@ -5,6 +5,6 @@ namespace WebAPI
 {
     public interface IFullStoreService
     {
-        Task<List<ShopItem>> GetAll();
+        Task<List<ShopItem>> AllItems { get; }
     }
 }

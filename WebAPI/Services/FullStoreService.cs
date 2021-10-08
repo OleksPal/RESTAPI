@@ -5,16 +5,17 @@ namespace WebAPI
 {
     public class FullStoreService : IFullStoreService
     {
-        FoodStoreRepository fsr = new();
-        AppliancesStoreRepository asr = new();
-
-        public async Task<List<ShopItem>> GetAll()
+        public Task<List<ShopItem>> AllItems
         {
-            List<ShopItem> answer = new();
-
-            answer.AddRange(await asr.GetItems());
-            answer.AddRange(await fsr.GetItems());
-            return answer;
+            get 
+            {
+                IStoreRepository fsr = new FoodStoreRepository();
+                IStoreRepository asr = new AppliancesStoreRepository();
+                List<ShopItem> items = new();
+                items.AddRange(fsr.ItemList);
+                items.AddRange(asr.ItemList);
+                return Task.FromResult(items);
+            } 
         }
     }
 }

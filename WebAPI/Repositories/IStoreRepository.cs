@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 
 namespace WebAPI
 {
-    public interface IAppliancesStoreRepository
+    public interface IStoreRepository
     {
         Task AddItem(string name, double price);
-        Task<List<ShopItem>> GetItems();
+        Task<List<ShopItem>> GetItemsByName(string name);
         Task UpdateItemInTable(string name, double price);
         Task DeleteItemFromTable(string name);
+
+        List<ShopItem> ItemList { get; }
     }
 }

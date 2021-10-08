@@ -5,11 +5,20 @@ using System.Threading.Tasks;
 
 namespace WebAPI
 {
-    public class FoodStoreRepository : IFoodStoreRepository
+    public class FoodStoreRepository : IStoreRepository
     {
         const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
-        AttachDbFilename=C:\Users\Home\Documents\GitHub\RESTAPI\WebAPI\Database.mdf;
+        AttachDbFilename=C:\Users\komp\Documents\GitHub\RESTAPI\WebAPI\Database.mdf;
         Integrated Security=True;MultipleActiveResultSets=true;";
+
+        public List<ShopItem> ItemList 
+        {
+            get 
+            {
+                IGetFoodStoreItemList df = new DataFactory();
+                return df.FoodStoreItemList;
+            }
+        }
 
         public async Task AddItem(string name, double price)
         {
@@ -24,7 +33,7 @@ namespace WebAPI
             }
         }
 
-        public async Task<List<ShopItem>> GetItems(string name)
+        public async Task<List<ShopItem>> GetItemsByName(string name)
         {
             List<ShopItem> answer = new();
             await using (SqlConnection sqlConnection = new(connectionString))
@@ -47,12 +56,6 @@ namespace WebAPI
                 }
             }
             return answer;
-        }
-
-        public async Task<List<ShopItem>> GetItems()
-        {
-            DataFactory df = new();
-            return await df.GetStoreItemList("FoodStoreItems");
         }
 
         public async Task UpdateItemInTable(string name, double price)
