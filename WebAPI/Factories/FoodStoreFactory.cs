@@ -2,7 +2,7 @@
 
 namespace WebAPI
 {
-    internal class FoodStoreFactory
+    public class FoodStoreFactory
     {
         public FoodStore GetFoodStore() => new();
 

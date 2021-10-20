@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace WebAPI
 {
-    internal abstract class Shop
+    public abstract class Shop
     {
+        public int ShopId { get; set; }
         public List<ShopItem> items;
 
         protected Shop(List<ShopItem> items)
@@ -20,21 +21,19 @@ namespace WebAPI
             {
                 if (value == null)
                     throw new ArgumentNullException($"List can’t be null");
-                if (value.Count <= 0)
-                    throw new ArithmeticException("Shop must sell at least something");
                 this.items = value;
             }
             get => this.items;
         }
     }
 
-    internal class FoodStore : Shop
+    public class FoodStore : Shop
     {
         public FoodStore() : base() { }
         public FoodStore(List<ShopItem> items) : base(items) { }
     }
 
-    internal class AppliancesStore : Shop
+    public class AppliancesStore : Shop
     {
         public AppliancesStore() : base() { }
         public AppliancesStore(List<ShopItem> items) : base(items) { }

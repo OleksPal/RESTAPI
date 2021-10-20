@@ -17,7 +17,7 @@ namespace WebAPI
             await fsr.DeleteItemFromTable(name);
         }
 
-        public async Task<List<ShopItem>> GetItems(string name)
+        public async Task<ShopItem> GetItems(string name)
         {
             return await fsr.GetItemsByName(name);
         }

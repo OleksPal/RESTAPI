@@ -4,8 +4,7 @@ namespace WebAPI
 {
     public abstract class Item 
     {
-        public string name;         
-               
+        protected string name;               
         public string Name
         {
             set
@@ -27,7 +26,9 @@ namespace WebAPI
 
     public class ShopItem : Item
     {
-        public double price;
+        public int ShopItemId { get; set; }
+        public Shop Shop { get; set; }
+        private double price;
 
         public ShopItem(string name, double price)
         {

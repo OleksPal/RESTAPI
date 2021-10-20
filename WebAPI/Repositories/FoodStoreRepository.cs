@@ -2,88 +2,59 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
 using System.Threading.Tasks;
+using System.Data.Entity;
+using System.Linq;
 
 namespace WebAPI
 {
     public class FoodStoreRepository : IStoreRepository
     {
-        const string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;
-        AttachDbFilename=C:\Users\komp\Documents\GitHub\RESTAPI\WebAPI\Database.mdf;
-        Integrated Security=True;MultipleActiveResultSets=true;";
-
         public List<ShopItem> ItemList 
         {
-            get 
+            get
             {
-                IGetFoodStoreItemList df = new DataFactory();
-                return df.FoodStoreItemList;
+                SampleContext context = new();
+                List<ShopItem> list = context.ShopItems.Where(item => item.Shop.ShopId == 1).ToList();
+                return list;
             }
         }
 
         public async Task AddItem(string name, double price)
         {
-            await using (SqlConnection sqlConnection = new(connectionString))
-            {
-                await sqlConnection.OpenAsync();
-                await using (SqlCommand command = new SqlCommand($"INSERT INTO FoodStoreItems(Name, Price)" +
-                                             $" VALUES('{name}',{price});", sqlConnection))
-                {
-                    SqlDataReader sqlReader = await command.ExecuteReaderAsync();
-                }                    
-            }
+            ShopItemFactory sif = new();
+            ShopItem newShopItem = sif.GetShopItem(name, price);
+
+            FoodStoreFactory fsf = new();
+            FoodStore foodStore = fsf.GetFoodStore();
+            foodStore.ShopId = 1;
+
+            newShopItem.Shop = foodStore;
+
+            SampleContext context = new();
+            context.ShopItems.Add(newShopItem);
+            await context.SaveChangesAsync();
         }
 
-        public async Task<List<ShopItem>> GetItemsByName(string name)
+        public Task<ShopItem> GetItemsByName(string name)
         {
-            List<ShopItem> answer = new();
-            await using (SqlConnection sqlConnection = new(connectionString))
-            {
-                await sqlConnection.OpenAsync();
-                await using (SqlCommand command = new SqlCommand($"SELECT * FROM FoodStoreItems" +
-                                             $" WHERE Name = '{name}'", sqlConnection))
-                {
-                    await using (SqlDataReader sqlReader = command.ExecuteReader())
-                    {
-                        if (sqlReader != null)
-                        {
-                            while (await sqlReader.ReadAsync())
-                            {
-                                answer.Add(new ShopItem(sqlReader.GetString("Name"),
-                                    (double)sqlReader.GetDecimal("Price")));
-                            }
-                        }
-                    } // reader closed and disposed up here
-                }
-            }
-            return answer;
+            SampleContext context = new();
+            return context.ShopItems.FirstOrDefaultAsync(item => item.Name == name && item.Shop.ShopId == 1);
         }
 
         public async Task UpdateItemInTable(string name, double price)
         {
-            await using (SqlConnection sqlConnection = new(connectionString))
-            {
-                await sqlConnection.OpenAsync();
-                await using (SqlCommand command = new SqlCommand($"UPDATE FoodStoreItems" +
-                                             $" SET Name = '{name}'," +
-                                             $" Price = {price} " +
-                                             $" WHERE Name = '{name}'", sqlConnection))
-                {
-                    SqlDataReader sqlReader = await command.ExecuteReaderAsync();
-                }                    
-            }
+            SampleContext context = new();
+            ShopItem shopItem = context.ShopItems.FirstOrDefaultAsync(item => item.Name == name && item.Shop.ShopId == 1).Result;
+            shopItem.Price = price;
+            await context.SaveChangesAsync();
         }
 
         public async Task DeleteItemFromTable(string name)
         {
-            await using (SqlConnection sqlConnection = new(connectionString))
-            {
-                await sqlConnection.OpenAsync();
-                await using (SqlCommand command = new SqlCommand($"DELETE FROM FoodStoreItems WHERE" +
-                                             $" Name = '{name}'", sqlConnection))
-                {
-                    SqlDataReader sqlReader = await command.ExecuteReaderAsync();
-                }
-            }
+            SampleContext context = new();
+            var shopItem = context.ShopItems.FirstOrDefaultAsync(item => item.Name == name && item.Shop.ShopId == 1).Result;
+            context.ShopItems.Remove(shopItem);
+            await context.SaveChangesAsync();
         }
     }
 }

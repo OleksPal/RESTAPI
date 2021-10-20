@@ -6,7 +6,7 @@ namespace WebAPI
     public interface IStoreRepository
     {
         Task AddItem(string name, double price);
-        Task<List<ShopItem>> GetItemsByName(string name);
+        Task<ShopItem> GetItemsByName(string name);
         Task UpdateItemInTable(string name, double price);
         Task DeleteItemFromTable(string name);
 

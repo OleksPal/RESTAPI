@@ -7,7 +7,7 @@ namespace WebAPI
     {
         Task Add(string name, double price);
         Task<List<ShopItem>> GetItems();
-        Task<List<ShopItem>> GetItems(string name);
+        Task<ShopItem> GetItems(string name);
         Task Update(string name, double price);
         Task Delete(string name);
     }

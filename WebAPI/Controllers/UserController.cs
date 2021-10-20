@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;   
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI
 {
@@ -34,7 +34,7 @@ namespace WebAPI
 
         [HttpGet]
         [Route("GetItemsFromFoodStore")]
-        public async Task<List<ShopItem>> GetItemsFromFoodStore(string name)
+        public async Task<ShopItem> GetItemsFromFoodStore(string name)
         {
             IStoreService fss = new FoodStoreService();
             return await fss.GetItems(name);
@@ -42,7 +42,7 @@ namespace WebAPI
 
         [HttpGet]
         [Route("GetItemsFromAppliancesStore")]
-        public async Task<List<ShopItem>> GetItemsFromAppliancesStore(string name)
+        public async Task<ShopItem> GetItemsFromAppliancesStore(string name)
         {
             IStoreService appSS = new AppliancesStoreService();
             return await appSS.GetItems(name);
