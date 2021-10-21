@@ -23,13 +23,9 @@ namespace WebAPI
             ShopItemFactory sif = new();
             ShopItem newShopItem = sif.GetShopItem(name, price);
 
-            AppliancesStoreFactory asf = new();
-            AppliancesStore appliancesStore = asf.GetAppliancesStore();
-            appliancesStore.ShopId = 2;
-
-            newShopItem.Shop = appliancesStore;
-
             SampleContext context = new();
+            AppliancesStore fs = (AppliancesStore)context.Stores.FirstOrDefaultAsync(item => item.ShopId == 2).Result;
+            newShopItem.Shop = fs;
             context.ShopItems.Add(newShopItem);
             await context.SaveChangesAsync();
         }
